@@ -3,7 +3,11 @@ import sys
 import os
 import string
 import math
+from copy import copy
+import operator
+from nouns import extract_nouns
 from nltk.corpus import stopwords
+
 FILE_MATCHES = 1
 SENTENCE_MATCHES = 1
 
@@ -20,14 +24,15 @@ def main():
         filename: tokenize(files[filename])
         for filename in files
     }
-    file_idfs = compute_idfs(file_words)
+    file_idfs = compute_idfs(copy(file_words))
+    new_ma_val = max(file_idfs.items(), key=operator.itemgetter(1))[0]
 
     # Prompt user for query
     query = set(tokenize(input("Query: ")))
 
     # Determine top file matches according to TF-IDF
     filenames = top_files(query, file_words, file_idfs, n=FILE_MATCHES)
-
+    return
     # Extract sentences from top files
     sentences = dict()
     for filename in filenames:
@@ -57,12 +62,16 @@ def load_files(directory):
     # Get the full path of the file
         filepath = os.path.join(directory, filename)
         with open(filepath , "rb") as file:
-            print(filename)
             content = file.read()
             content = content.decode("utf-8")
             files[filename] = content
 
     return files
+def have_common_char(str1, str2):
+    for char in str1:
+        if char in str2:
+            return True
+    return False
 
 def tokenize(document):
     """
@@ -74,13 +83,39 @@ def tokenize(document):
     """
     tokens = nltk.word_tokenize(document, language='english')
 
-    tokens = [token.lower() for token in tokens if token not in string.punctuation]
+    tokens = [token.lower() for token in tokens if not have_common_char(token, string.punctuation + "''")]
 
     # Remove stopwords
-    stop_words = set(stopwords.words('english'))
-    tokens = [token for token in tokens if token not in stop_words]
-
+    stop_words = set(stopwords.words('english') + ['’']) 
+    tokens = [token.lower() for token in tokens if token not in stop_words ]
+ 
     return tokens
+def compute_tf(term, documents):
+    """
+    Compute the term frequency of a term across all documents in a dictionary.
+
+    Arguments:
+    term -- the term to compute the TF for
+    documents -- a dictionary where keys are file names and values are lists of words in each file
+
+    Returns:
+    The term frequency of the term across all documents as a float.
+    """
+    # Convert the term to lowercase to make the search case-insensitive
+    term = term.lower()
+
+    # Get the count of the term across all documents
+    term_count = 0
+    for document in documents.values():
+        term_count += document.count(term)
+
+    # Compute the total number of terms across all documents
+    total_terms = sum(len(document) for document in documents.values())
+
+    # Compute the TF as the term count divided by the total number of terms
+    tf = term_count
+
+    return tf
 
 
 def compute_idfs(documents):
@@ -100,7 +135,6 @@ def compute_idfs(documents):
     Returns:
         A dictionary mapping each token to its IDF value.
     """
-    print(len(documents.values()))
     num_docs = len(documents.values())  # number of documents in the corpus
     token_counts = {}  # keep track of how many documents each token appears in
 
@@ -110,10 +144,12 @@ def compute_idfs(documents):
             token_counts[token] = token_counts.get(token, 0) + 1
 
     idf_values = {}  # dictionary to store the IDF values for each token
-
+    
     # calculate IDF for each token
     for token, count in token_counts.items():
-        idf_values[token] = math.log(num_docs / count)
+        idf_values[token] = math.log(num_docs / count) + 1
+
+    
 
     return idf_values
 
@@ -126,7 +162,24 @@ def top_files(query, files, idfs, n):
     files that match the query, ranked according to tf-idf.      
     """
     
-    raise NotImplementedError
+    
+    files = copy(files)
+    files_topic = {}
+    for filename in files:
+        files_topic[filename] = {}
+        NOUNS = extract_nouns(' '.join(files[filename]))
+        for word in files[filename]:
+            if word in idfs and word in NOUNS :
+                files_topic[filename][word] = idfs[word] * compute_tf(word, {filename: files[filename]})
+        
+        files_topic[filename] = dict(sorted(files_topic[filename].items(), key=lambda item: item[1], reverse=True))
+
+    for name in files_topic:
+        print(list(files_topic[name].items())[:4])
+    return None
+
+
+    
 
 
 def top_sentences(query, sentences, idfs, n):
@@ -142,3 +195,9 @@ def top_sentences(query, sentences, idfs, n):
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
