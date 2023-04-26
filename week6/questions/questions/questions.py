@@ -174,9 +174,12 @@ def top_files(query, files, idfs, n):
         
         files_topic[filename] = dict(sorted(files_topic[filename].items(), key=lambda item: item[1], reverse=True))
 
+
     for name in files_topic:
         print(list(files_topic[name].items())[:4])
     return None
+
+    
 
 
     

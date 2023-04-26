@@ -25,8 +25,8 @@ NP -> NP P NP | P NP | Det NP | NP Adv | Adj NP | N
 grammar = nltk.CFG.fromstring(NONTERMINALS + TERMINALS)
 parser = nltk.ChartParser(grammar)
 
-
-def main():
+nltk.grammar.CFG
+def main():gi
 
     # If filename specified, read sentence from file
     if len(sys.argv) == 2:

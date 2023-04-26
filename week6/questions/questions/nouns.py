@@ -20,3 +20,23 @@ def extract_nouns(document):
 
     # print the list of nouns
     return nouns
+import nltk
+from nltk.corpus import brown
+
+print(brown.words())
+
+# Download the Penn Treebank grammar
+
+# Load the grammar
+# grammar = nltk.data.load('grammars/large_grammars/atis.cfg')
+
+# # Create a parser using the grammar
+# parser = nltk.parse.ChartParser(grammar)
+
+# # Parse a sentence using the parser
+# sentence = "I want to fly to New York"
+# tokens = nltk.word_tokenize(sentence)
+# tree = next(parser.parse(tokens))
+
+# Print the parse tree
+# print(tree)
