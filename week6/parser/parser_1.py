@@ -26,7 +26,7 @@ grammar = nltk.CFG.fromstring(NONTERMINALS + TERMINALS)
 parser = nltk.ChartParser(grammar)
 
 nltk.grammar.CFG
-def main():gi
+def main():
 
     # If filename specified, read sentence from file
     if len(sys.argv) == 2:

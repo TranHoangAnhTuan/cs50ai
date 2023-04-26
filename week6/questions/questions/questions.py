@@ -179,10 +179,6 @@ def top_files(query, files, idfs, n):
         print(list(files_topic[name].items())[:4])
     return None
 
-    
-
-
-    
 
 
 def top_sentences(query, sentences, idfs, n):

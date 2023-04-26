@@ -9,34 +9,40 @@ def extract_nouns(document):
 
     # tokenize the text into words
     words = word_tokenize(document)
-
     # identify the parts of speech for each word
     pos_tags = nltk.pos_tag(words)
 
     # extract the nouns
     nouns = [word for word, pos in pos_tags if (pos == 'NN' or pos == 'NNS' or pos == 'NNP' or pos == 'NNPS') and len(word) > 1]
     # nouns = [word for word, pos in pos_tags if (pos == 'NN')]
-
+    
 
     # print the list of nouns
     return nouns
+
+# Import required libraries
 import nltk
-from nltk.corpus import brown
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+from nltk import pos_tag, word_tokenize, RegexpParser
 
-print(brown.words())
+# Example text
+sample_text = "The quick brown fox jumps over the lazy dog"
 
-# Download the Penn Treebank grammar
+# Find all parts of speech in above sentence
+tagged = pos_tag(word_tokenize(sample_text))
 
-# Load the grammar
-# grammar = nltk.data.load('grammars/large_grammars/atis.cfg')
+#Extract all parts of speech from any text
+chunker = RegexpParser("""
+					NP: {<DT>?<JJ>*<NN>} #To extract Noun Phrases  
+					P: {<IN>}			 #To extract Prepositions
+					V: {<V.*>}			 #To extract Verbs
+					PP: {
 
-# # Create a parser using the grammar
-# parser = nltk.parse.ChartParser(grammar)
+<p> <NP>}		 #To extract Prepositional Phrases
+					VP: {<V> <NP|PP>*}	 #To extract Verb Phrases
+					""")
 
-# # Parse a sentence using the parser
-# sentence = "I want to fly to New York"
-# tokens = nltk.word_tokenize(sentence)
-# tree = next(parser.parse(tokens))
-
-# Print the parse tree
-# print(tree)
+# Print all parts of speech in above sentence
+output = chunker.parse(tagged)
+print("After Extracting\n", output)

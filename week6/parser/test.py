@@ -38,4 +38,3 @@ def NP_chunk(tree):
             
     return list_NP
     
-

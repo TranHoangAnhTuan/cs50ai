@@ -2,6 +2,9 @@ import nltk
 import string
 corpus = nltk.corpus.brown
 
+
+TERMINALS = """"""
+
 # Create a list of all words in the corpus
 words = corpus.words()
 
@@ -29,7 +32,16 @@ for word in pos_tag:
     terminal[word[1]].add(word[0])
 
 
-print(terminal['DT'])
+print(terminal.keys())
 
 
+for type in terminal:
+    TERMINALS = TERMINALS  + type + ": "
+    for word in terminal[type]:
+            TERMINALS = TERMINALS + f"\"{word}\" | "
+    
+    TERMINALS = TERMINALS + '\n'
+# grammar = nltk.data.load('grammars/large_grammars/atis.cfg')
+
+# grammars = nltk.CFG.fromstring(TERMINALS + )
 
