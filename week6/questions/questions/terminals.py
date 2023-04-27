@@ -45,3 +45,4 @@ for type in terminal:
 
 # grammars = nltk.CFG.fromstring(TERMINALS + )
 
+print(terminal['DT'])

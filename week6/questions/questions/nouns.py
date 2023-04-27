@@ -22,27 +22,46 @@ def extract_nouns(document):
 
 # Import required libraries
 import nltk
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
+
 from nltk import pos_tag, word_tokenize, RegexpParser
 
 # Example text
-sample_text = "The quick brown fox jumps over the lazy dog"
+sample_text = "what the types of supervised learning ?"
 
 # Find all parts of speech in above sentence
 tagged = pos_tag(word_tokenize(sample_text))
 
 #Extract all parts of speech from any text
-chunker = RegexpParser("""
-					NP: {<DT>?<JJ>*<NN>} #To extract Noun Phrases  
-					P: {<IN>}			 #To extract Prepositions
-					V: {<V.*>}			 #To extract Verbs
-					PP: {
+import nltk
 
-<p> <NP>}		 #To extract Prepositional Phrases
-					VP: {<V> <NP|PP>*}	 #To extract Verb Phrases
-					""")
+# define a grammar to extract noun phrases
+grammar = r"""
+  NP: {<DT|PRP\$>?<JJ|VBN.*>*<NN|VBG.*>+} # chunk determiners, possessive pronouns, adjectives, and nouns
+      {<NNP>+} # chunk consecutive proper nouns
+      {<PRP>} # chunk personal pronouns
+      {<VBN.*>+<NN|VBG.*>+} # chunk past participle verb followed by a noun
+      {<CD>+<NNS|NN>} # chunk cardinal numbers followed by a plural or singular noun
+"""
 
-# Print all parts of speech in above sentence
-output = chunker.parse(tagged)
-print("After Extracting\n", output)
+# create a chunk parser with the grammar
+chunk_parser = nltk.RegexpParser(grammar)
+
+# tokenize a sentence and POS tag it
+sentence = "what is supervised learning"
+def extract_nouns_phrase(sentence):
+    tokens = nltk.word_tokenize(sentence)
+    pos_tags = nltk.pos_tag(tokens)
+
+    # parse the POS tags to extract noun phrases
+    nouns_phrase = []
+    tree = chunk_parser.parse(pos_tags)
+    for subtree in tree.subtrees():
+        if subtree.label() == 'NP':
+            
+            nouns_phrase.append(' '.join(word for word, tag in subtree.leaves()))
+
+    return nouns_phrase
+
+# print(extract_nouns_phrase(sentence))
+
+# print(pos_tag(['learning']))

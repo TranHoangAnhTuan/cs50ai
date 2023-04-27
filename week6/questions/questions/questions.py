@@ -5,7 +5,7 @@ import string
 import math
 from copy import copy
 import operator
-from nouns import extract_nouns
+from nouns import extract_nouns, extract_nouns_phrase
 from nltk.corpus import stopwords
 
 FILE_MATCHES = 1
@@ -28,7 +28,7 @@ def main():
     new_ma_val = max(file_idfs.items(), key=operator.itemgetter(1))[0]
 
     # Prompt user for query
-    query = set(tokenize(input("Query: ")))
+    query = input("Query: ")
 
     # Determine top file matches according to TF-IDF
     filenames = top_files(query, file_words, file_idfs, n=FILE_MATCHES)
@@ -177,6 +177,17 @@ def top_files(query, files, idfs, n):
 
     for name in files_topic:
         print(list(files_topic[name].items())[:4])
+
+        pass
+    NP_of_query = extract_nouns_phrase(query)
+    print(NP_of_query)
+    rank_core = {}
+    for name in files_topic:
+        for topic in list(files_topic[name].items())[:4]:
+            for NP in NP_of_query:
+                if topic[0] in NP:
+                    pass 
+
     return None
 
 
